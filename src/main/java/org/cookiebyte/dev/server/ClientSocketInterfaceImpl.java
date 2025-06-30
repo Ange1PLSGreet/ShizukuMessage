@@ -61,7 +61,7 @@ public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketI
             shizukuCryptor.InverseSortingArray();
             shizukuCryptor.HashEncryptArrayData();
 
-            output.println(message);
+           // output.println(message);
             log.info("Crypted MSG:" + CryptorMessage);
             log.info("Message Sent By Client:" + message);
 
