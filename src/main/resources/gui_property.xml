@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Store The Gui Property
+-->
+<gui-property>
+    <!--
+     If Not Dev, Please Change Name To 'User-GUI'
+     You Can Delete This Comment's Wrapped. Then Comment <property-name name = "Dev-GUI">
+     To Enabled User Mode
+
+     Or Running The BuildScript(Although There Is Not :) HaHa )
+    -->
+
+    <!--
+    <property-name name = "User-GUI"/>
+    -->
+    <property-name name="Dev-GUI"/>
+
+    <!--
+     This Is The Title Of The Window
+     You Can Change It To What You Want
+    -->
+    <property-title>
+        <title title="Shizuku Messanger "/>
+    </property-title>
+
+    <!--
+     This Is The Status Of Server
+     Now Its Have Two Status
+     1. You Are Visiting Server:
+     2. Internal Server Error:
+
+     You Can Change It To What You Want
+     But Please Keep The Same Format
+    -->
+    <server-status>
+        <normal status="You Are Visiting Server: "/>
+        <error status="Internal Server Error:"/>
+    </server-status>
+
+    <!--
+     This Is Device Width And Height
+     It's May Be Dynamic, Umm.. I'm Not Sure After Implement It
+    -->
+    <device-width>
+        <width width="300"/>
+    </device-width>
+    <device-height>
+        <height height="200"/>
+    </device-height>
+
+</gui-property>
