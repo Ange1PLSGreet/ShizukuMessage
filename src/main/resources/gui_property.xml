@@ -38,15 +38,34 @@ Store The Gui Property
         <error status="Internal Server Error:"/>
     </server-status>
 
+    <!--!!== TODO These Is  Impl In Java ==!!-->
+
     <!--
-     This Is Device Width And Height
-     It's May Be Dynamic, Umm.. I'm Not Sure After Implement It
+      Under Button Style
     -->
-    <device-width>
-        <width width="300"/>
-    </device-width>
-    <device-height>
-        <height height="200"/>
-    </device-height>
+    <under-button>
+        <btn img="src/main/resources/images/01.png" text="ConnectToServer"/>
+    </under-button>
+
+    <!--
+       Group Info Card Style
+    -->
+    <group-info-card-style corners="true" shadow="true" shadow-color="black" card-color="white" />
+
+    <!--
+      Personal Info Card Style
+    -->
+    <personal-info-card-style>
+        <avatar-position pos="top-left"/>
+        <username-position pos="near-avatar"/>
+        <other-operand pos="under" />
+    </personal-info-card-style>
+
+    <!--
+     Side Button Style
+    -->
+    <side-button>
+        <btn img="src/main/resources/images/02.png" text="Personal"/>
+    </side-button>
 
 </gui-property>

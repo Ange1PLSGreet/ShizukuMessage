@@ -70,44 +70,16 @@ public class UnionPropertyGet implements UnionLogInterface, GuiObjectInterface {
         return GetObjectAttr("error", "status");
     }
 
+    @Deprecated
     @Override
     public String GetDeviceWidth() {
         return GetObjectAttr("width", "width");
     }
 
+    @Deprecated
     @Override
     public String GetDeviceHeight() {
         return GetObjectAttr("height", "height");
-    }
-
-    public int GetWidthMain(){
-        try{
-            UnionPropertyGet unionPropertyGet = new UnionPropertyGet();
-            String width = unionPropertyGet.GetObjectAttr("width", "width"); // 修正为获取 width 元素的 width 属性
-            if (width != null) {
-                return Integer.parseInt(width);
-            } else{
-                log.error("Error: width is null");
-            }
-        } catch (Exception e) {
-            log.error("Error: " + e.getMessage());
-        }
-        return 1;
-    }
-
-    public int GetHeightMain() {
-        try {
-            UnionPropertyGet unionPropertyGet = new UnionPropertyGet();
-            String height = unionPropertyGet.GetObjectAttr("height", "height"); // 修正为获取 height 元素的 height 属性
-            if (height != null) {
-                return Integer.parseInt(height);
-            } else {
-                log.error("Error: height is null");
-            }
-        } catch (Exception e) {
-            log.error("Error: " + e.getMessage());
-        }
-        return 1;
     }
 
     /**

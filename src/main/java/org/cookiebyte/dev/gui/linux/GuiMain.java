@@ -23,8 +23,12 @@ public class GuiMain implements UnionLogInterface {
                 // 创建并显示 GUI
                 JFrame frame = new JFrame(guiMain.GetTitleMain());
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                // 通过实例调用 GetWidth 方法
-                frame.setSize(guiMain.GetWidthMain(), guiMain.GetHeightMain());
+                // 自适应
+                // 获取当前屏幕的分辨率 / 2
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int screenWidth = screenSize.width / 2;
+                int screenHeight = screenSize.height / 2;
+                frame.setSize(screenWidth, screenHeight);
                 frame.setVisible(true);
                 log.info("GUI initialized successfully");
             });
