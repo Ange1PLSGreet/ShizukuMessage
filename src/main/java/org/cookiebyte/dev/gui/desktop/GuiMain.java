@@ -1,4 +1,4 @@
-package org.cookiebyte.dev.gui.linux;
+package org.cookiebyte.dev.gui.desktop;
 
 
 import com.formdev.flatlaf.FlatLightLaf;

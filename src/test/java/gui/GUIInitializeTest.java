@@ -1,6 +1,6 @@
 package gui;
 
-import org.cookiebyte.dev.gui.linux.GuiMain;
+import org.cookiebyte.dev.gui.desktop.GuiMain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertNotNull;
