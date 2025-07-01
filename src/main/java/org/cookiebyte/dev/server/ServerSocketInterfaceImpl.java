@@ -1,11 +1,9 @@
 package org.cookiebyte.dev.server;
 
-
-import org.apache.log4j.Logger;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.*;
 import org.cookiebyte.dev.announce.ServerSocketInterface;
 import org.cookiebyte.dev.announce.SocketInterface;
 import org.cookiebyte.dev.announce.log.UnionLogInterface;
@@ -14,60 +12,87 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
 
     protected ServerSocket serverSocket = null;
 
-    protected PrintWriter out = null;
+    protected ExecutorService executorService = Executors.newCachedThreadPool();
 
-    protected Socket clientSocket = null;
+    private final BlockingQueue<BufferedReader> inputStreams = new LinkedBlockingQueue<>();
 
-    private BufferedReader in = null;
+    private final BlockingQueue<PrintWriter> outputStreams = new LinkedBlockingQueue<>();
 
     @Override
     public void Initialize(int port) {
+        SetUpServer(port);
+    }
+
+    public void SetUpServer(int port) {
+        Thread serverThread = new Thread(() -> {
+            try {
+                serverSocket = new ServerSocket(port);
+                log.info("Initialize.. Listening on port:" + port);
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    log.info("GetDataStream. Socket accepted.");
+                    log.info("Client Connected. IP:" + clientSocket.getInetAddress());
+                    executorService.submit(() -> handleClient(clientSocket));
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
+        });
+        serverThread.start();
+    }
+
+    private void handleClient(Socket clientSocket) {
         try {
-            serverSocket = new ServerSocket(port);
-            log.info("Initialize.. Listening on port:" + port);
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+            inputStreams.offer(in);
+            outputStreams.offer(out);
+
+            // 处理客户端输入
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                log.info("Received from client: " + inputLine);
+                // 可以在这里添加业务逻辑
+                out.println("Server received: " + inputLine);
+            }
         } catch (IOException e) {
-            log.error(e.getMessage());
+            log.error("Error handling client: " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                log.error("Error closing client socket: " + e.getMessage());
+            }
         }
     }
 
     @Override
     public BufferedReader GetDataStream() {
         try {
-            clientSocket = serverSocket.accept();
-            log.info("GetDataStream. Socket accepted.");
-            log.info("Client Connected. IP:" + clientSocket.getInetAddress());
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            return in;
-        } catch (IOException e) {
-            log.error(e.getMessage());
+            return inputStreams.poll(5, TimeUnit.SECONDS); // 等待 5 秒获取输入流
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
         }
-        return null;
     }
 
     @Override
     public PrintWriter OutStream() {
         try {
-            if (clientSocket == null || clientSocket.isClosed()) {
-                log.error("Socket is not initialized or closed");
-                return null;
-            }
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            return out;
-        } catch (IOException e) {
-            log.error(e.getMessage());
+            return outputStreams.poll(5, TimeUnit.SECONDS); // 等待 5 秒获取输出流
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
         }
-        return null;
     }
 
     @Override
     public void close() {
+        executorService.shutdown();
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (clientSocket != null) clientSocket.close();
             if (serverSocket != null) serverSocket.close();
         } catch (IOException e) {
-            log.error("Error closing resources: " + e.getMessage());
+            log.error("Error closing server socket: " + e.getMessage());
         }
     }
 }

@@ -1,10 +1,12 @@
 package hex;
 
 import org.cookiebyte.dev.cryptor.HexTranslate;
+import org.junit.jupiter.api.Test;
 
 public class HexTranslateTest {
 
-    public static void main(String[] args) {
+    @Test
+    public void HexTranslate() {
         // 示例字符串
         String originalString = "中文测试";
 

@@ -33,7 +33,7 @@ public class ShizukuCryptorImpl implements ShizukuCryptorInterface, UnionLogInte
         this.originalMessage = message;
         this.hexMessage = hexTranslate.Str2HexStr(message);
         this.isDecryptedData = false;
-        return message;
+        return this.hexMessage;
     }
 
     /**

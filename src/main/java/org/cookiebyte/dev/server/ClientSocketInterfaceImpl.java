@@ -4,14 +4,14 @@ import org.cookiebyte.dev.announce.ClientSocketInterface;
 import org.cookiebyte.dev.announce.SocketInterface;
 import org.cookiebyte.dev.announce.log.UnionLogInterface;
 import org.cookiebyte.dev.cryptor.ShizukuCryptorImpl;
-import org.cookiebyte.dev.thread.EventThreadInterfaceImpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientSocketInterfaceImpl extends ClientSideAbstract implements ClientSocketInterface, SocketInterface, UnionLogInterface {
+public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketInterface, UnionLogInterface {
 
     public String ip = null;
 
@@ -25,10 +25,6 @@ public class ClientSocketInterfaceImpl extends ClientSideAbstract implements Cli
 
     public BufferedReader input = null;
 
-    public ClientSocketInterfaceImpl(String service) {
-        super(service);
-    }
-
     @Override
     public void RunClient() {
         try {
@@ -39,50 +35,63 @@ public class ClientSocketInterfaceImpl extends ClientSideAbstract implements Cli
         }
     }
 
-    @Override
+    // Multi Thread Conn Impl
     public void ConnectToServer() {
-        ClientSideAbstract clientSideAbstract = new ClientSideAbstract("Connect") {
-            @Override
-            public void ConnectToServer() {
-                super.ConnectToServer();
+        Thread connectThread = new Thread(() -> {
+            try {
+                this.socket = new Socket(this.ip, this.port);
+                this.output = new PrintWriter(this.socket.getOutputStream(), true);
+                this.input = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            } catch (IOException e) {
+                log.error("Connection error: " + e.getMessage());
+                throw new RuntimeException(e);
             }
-        };
-        EventThreadInterfaceImpl eventThreadInterface = new EventThreadInterfaceImpl();
-        eventThreadInterface.event = new ClientSideAbstract("Connect") {
-            @Override
-            public void ConnectToServer() {
-                super.ConnectToServer();
-            }
-        };
-        eventThreadInterface.start();
+        });
+        connectThread.start();
+        try {
+            connectThread.join(); // 等待连接线程执行完毕
+        } catch (InterruptedException e) {
+            log.error("Interrupted while waiting for connection: " + e.getMessage());
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Override
     public void SendMessageToServer() {
+        Thread sendThread = new Thread(() -> {
+            try {
+                if (output == null) {
+                    log.error("Output stream is not initialized");
+                    return;
+                }
+                ShizukuCryptorImpl shizukuCryptor = new ShizukuCryptorImpl();
+                String CryptorMessage = shizukuCryptor.EncodeMessageToHex(message);
+
+                shizukuCryptor.StoreHexDataIntoArray();
+                shizukuCryptor.InverseSortingArray();
+                shizukuCryptor.HashEncryptArrayData();
+
+                log.info("Crypted MSG:" + CryptorMessage);
+                log.info("Message Sent By Client(Original):" + message);
+
+                if (input != null) {
+                    String response = input.readLine();
+                    System.out.println("Received:" + response);
+                } else {
+                    log.error("Input stream is not initialized");
+                }
+            } catch (IOException e) {
+                log.error("Error sending/receiving message: " + e.getMessage());
+            }
+        });
+        sendThread.start();
         try {
-            if (output == null) {
-                log.error("Output stream is not initialized");
-                return;
-            }
-            ShizukuCryptorImpl shizukuCryptor = new ShizukuCryptorImpl();
-            String CryptorMessage = shizukuCryptor.EncodeMessageToHex(message);
-            shizukuCryptor.StoreHexDataIntoArray();
-            shizukuCryptor.InverseSortingArray();
-            shizukuCryptor.HashEncryptArrayData();
-
-           // output.println(message);
-            log.info("Crypted MSG:" + CryptorMessage);
-            log.info("Message Sent By Client:" + message);
-
-            if (input != null) {
-                String response = input.readLine();
-                System.out.println("Received:" + response);
-            } else {
-                log.error("Input stream is not initialized");
-            }
-        } catch (IOException e) {
-            log.error("Error sending/receiving message: " + e.getMessage());
+            sendThread.join(); // 等待发送线程执行完毕
+        } catch (InterruptedException e) {
+            log.error("Interrupted while waiting for message sending: " + e.getMessage());
+            Thread.currentThread().interrupt();
         }
+
     }
 
     // 添加关闭方法
