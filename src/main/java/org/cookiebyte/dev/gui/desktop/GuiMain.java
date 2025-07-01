@@ -16,7 +16,7 @@ public class GuiMain implements UnionLogInterface {
                 try {
                     UIManager.setLookAndFeel(new FlatLightLaf());
                 } catch (Exception ex) {
-                    System.err.println("Failed to initialize LaF");
+                    log.error("Failed to initialize LaF");
                 }
                 // 创建 GuiMain 实例
                 UnionPropertyGet guiMain = new UnionPropertyGet();
