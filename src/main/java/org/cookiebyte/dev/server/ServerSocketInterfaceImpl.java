@@ -7,6 +7,7 @@ import java.util.concurrent.*;
 import org.cookiebyte.dev.announce.ServerSocketInterface;
 import org.cookiebyte.dev.announce.SocketInterface;
 import org.cookiebyte.dev.announce.log.UnionLogInterface;
+import org.cookiebyte.dev.cryptor.ShizukuCryptorImpl;
 
 public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketInterface, UnionLogInterface {
 
@@ -14,10 +15,9 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
 
     protected ExecutorService executorService = Executors.newCachedThreadPool();
 
-    private final BlockingQueue<BufferedReader> inputStreams = new LinkedBlockingQueue<>();
+    private BlockingQueue<BufferedReader> inputStreams = new LinkedBlockingQueue<>();
 
-    private final BlockingQueue<PrintWriter> outputStreams = new LinkedBlockingQueue<>();
-
+    private BlockingQueue<PrintWriter> outputStreams = new LinkedBlockingQueue<>();
 
     @Override
     public void Initialize(int port) {
@@ -33,7 +33,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
                     Socket clientSocket = serverSocket.accept();
                     log.info("GetDataStream. Socket accepted.");
                     log.info("Client Connected. IP:" + clientSocket.getInetAddress());
-                    executorService.submit(() -> HandleClient(clientSocket));
+                    executorService.submit(() -> handleClient(clientSocket));
                 }
             } catch (IOException e) {
                 log.error(e.getMessage());
@@ -42,7 +42,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
         serverThread.start();
     }
 
-    private void HandleClient(Socket clientSocket) {
+    private void handleClient(Socket clientSocket) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -52,8 +52,15 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
             // 处理客户端输入
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                log.info("Received from client: " + inputLine);
-                out.println("Server received: " + inputLine);
+                log.info("Received encrypted data from client: " + inputLine);
+                // Decrypt: 解密接收到的加密消息
+                ShizukuCryptorImpl decryptor = new ShizukuCryptorImpl();
+                decryptor.ImportEncryptedData(inputLine);
+                decryptor.VerifyAndDecryptCharacters();
+                decryptor.ReverseArrayToOriginalOrder();
+                decryptor.DecodeHexToOriginalMessage();
+                String decryptedMessage = decryptor.GetDecryptedMessage();
+                log.info("Decrypted message from client: " + decryptedMessage);
             }
         } catch (IOException e) {
             log.error("Error handling client: " + e.getMessage());

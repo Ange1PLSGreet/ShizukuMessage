@@ -81,6 +81,17 @@ public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketI
                 if (input != null) {
                     String response = input.readLine();
                     log.info("Received from server:" + response);
+                    try {
+                        // 将十六进制字符串转换为整数
+                        int responseInt = Integer.parseInt(response, 16);
+                        if (responseInt == 0x01){
+                            log.info("Client has been connected to server");
+                        } else{
+                            log.error("Client has not been connected to server");
+                        }
+                    } catch (NumberFormatException e) {
+                        log.error("Failed to parse server response as hexadecimal number: " + e.getMessage());
+                    }
                 } else {
                     log.error("Input stream is not initialized");
                 }

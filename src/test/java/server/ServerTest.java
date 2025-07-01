@@ -28,7 +28,7 @@ public class ServerTest {
         executor.submit(() -> {
             server.GetDataStream();
             PrintWriter out = server.OutStream();
-            out.println("Connect Success!");
+            out.println(0x01);
         });
 
         // 创建客户端实例
