@@ -64,19 +64,23 @@ public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketI
                     log.error("Output stream is not initialized");
                     return;
                 }
+                // 加密消息
                 ShizukuCryptorImpl shizukuCryptor = new ShizukuCryptorImpl();
-                String CryptorMessage = shizukuCryptor.EncodeMessageToHex(message);
-
+                shizukuCryptor.EncodeMessageToHex(message);
                 shizukuCryptor.StoreHexDataIntoArray();
                 shizukuCryptor.InverseSortingArray();
                 shizukuCryptor.HashEncryptArrayData();
+                String encryptedMessage = shizukuCryptor.ExportEncryptedData();
 
-                log.info("Crypted MSG:" + CryptorMessage);
+                // 发送加密后的消息
+                output.println(encryptedMessage);
+                output.flush(); // 刷新输出流，确保消息立即发送
+                log.info("Crypted MSG:" + encryptedMessage);
                 log.info("Message Sent By Client(Original):" + message);
 
                 if (input != null) {
                     String response = input.readLine();
-                    System.out.println("Received:" + response);
+                    log.info("Received from server:" + response);
                 } else {
                     log.error("Input stream is not initialized");
                 }
@@ -91,7 +95,6 @@ public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketI
             log.error("Interrupted while waiting for message sending: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
-
     }
 
     // 添加关闭方法

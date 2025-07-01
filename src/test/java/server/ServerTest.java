@@ -6,6 +6,7 @@ import org.cookiebyte.dev.server.ServerSocketInterfaceImpl;
 import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +28,7 @@ public class ServerTest {
         executor.submit(() -> {
             server.GetDataStream();
             PrintWriter out = server.OutStream();
-            out.println("Server response");
+            out.println("Connect Success!");
         });
 
         // 创建客户端实例

@@ -18,6 +18,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
 
     private final BlockingQueue<PrintWriter> outputStreams = new LinkedBlockingQueue<>();
 
+
     @Override
     public void Initialize(int port) {
         SetUpServer(port);
@@ -32,7 +33,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
                     Socket clientSocket = serverSocket.accept();
                     log.info("GetDataStream. Socket accepted.");
                     log.info("Client Connected. IP:" + clientSocket.getInetAddress());
-                    executorService.submit(() -> handleClient(clientSocket));
+                    executorService.submit(() -> HandleClient(clientSocket));
                 }
             } catch (IOException e) {
                 log.error(e.getMessage());
@@ -41,7 +42,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
         serverThread.start();
     }
 
-    private void handleClient(Socket clientSocket) {
+    private void HandleClient(Socket clientSocket) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -52,7 +53,6 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
                 log.info("Received from client: " + inputLine);
-                // 可以在这里添加业务逻辑
                 out.println("Server received: " + inputLine);
             }
         } catch (IOException e) {
