@@ -10,7 +10,7 @@ public class GUIInitializeTest {
     @Test
     public void InitTest(){
         GuiMain guiMain = new GuiMain();
-        GuiMain.Initialize();
+        guiMain.Initialize();
         assertNotNull(guiMain);
     }
 }

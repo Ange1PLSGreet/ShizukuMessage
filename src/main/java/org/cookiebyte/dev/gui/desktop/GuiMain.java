@@ -1,47 +1,58 @@
 package org.cookiebyte.dev.gui.desktop;
 
-
 import com.formdev.flatlaf.FlatLightLaf;
-import javax.swing.*;
-
 import org.cookiebyte.dev.announce.log.UnionLogInterface;
+import org.cookiebyte.dev.gui.Drawer;
 import org.cookiebyte.dev.gui.UnionPropertyGet;
+import org.cookiebyte.dev.image.LoadSvgIconInterfaceImpl;
+import org.cookiebyte.dev.announce.gui.GuiMainInterface;
+import org.cookiebyte.dev.gui.Frame;
+
+import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
-public class GuiMain implements UnionLogInterface {
+public class GuiMain extends Drawer implements UnionLogInterface, GuiMainInterface {
 
-    public static void Initialize(){
-        Thread thread = new Thread( () -> {
+    public static final UnionPropertyGet unionPropertyGet = new UnionPropertyGet();
+
+    private static final GuiMain guiMain = new GuiMain();
+
+    public static final LoadSvgIconInterfaceImpl loadSvgIconInterface = new LoadSvgIconInterfaceImpl();
+
+    public int width;
+
+    public int height;
+
+    public int screenWidth;
+
+    public int screenHeight;
+
+    @Override
+    public void Initialize() {
+        Thread thread = new Thread(() -> {
             SwingUtilities.invokeLater(() -> {
-                try {
-                    UIManager.setLookAndFeel(new FlatLightLaf());
-                } catch (Exception ex) {
-                    log.error("Failed to initialize LaF");
-                }
-                // 创建 GuiMain 实例
-                UnionPropertyGet guiMain = new UnionPropertyGet();
-                // 创建并显示 GUI
-                JFrame frame = new JFrame(guiMain.GetTitleMain());
+                InitPlatPaf();
+                JFrame frame = new JFrame(unionPropertyGet.GetTitleMain());
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                // 自适应
-                // 获取当前屏幕的分辨率 / 2
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                int screenWidth = screenSize.width / 2;
-                int screenHeight = screenSize.height / 2;
+                screenWidth = screenSize.width / 2;
+                screenHeight = screenSize.height / 2;
+                width = screenSize.width;
+                height = screenSize.height;
                 frame.setSize(screenWidth, screenHeight);
                 frame.setVisible(true);
                 log.info("GUI initialized successfully");
+                Frame.frame = frame;
+                DrawUnderButtons();
             });
         });
         thread.start();
-        try{
+        try {
             thread.join();
         } catch (InterruptedException e) {
             log.error("Interrupted while waiting for GUI initialization: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
     }
-
-
 }
-

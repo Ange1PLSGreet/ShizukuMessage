@@ -13,13 +13,18 @@ public class ShizukuCryptorImpl implements ShizukuCryptorInterface, UnionLogInte
 
     // 加密相关字段
     protected String originalMessage;
+
     protected String hexMessage;
+
     protected char[] dataArray;
+
     protected String[] encryptedHashes;
+
     protected String[] salts;
 
     // 解密相关字段
     public char[] decryptedCharArray;
+
     protected boolean isDecryptedData = false;
 
     /**
