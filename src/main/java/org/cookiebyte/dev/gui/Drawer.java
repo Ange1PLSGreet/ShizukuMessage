@@ -2,6 +2,7 @@ package org.cookiebyte.dev.gui;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import org.cookiebyte.dev.announce.log.UnionLogInterface;
+import org.cookiebyte.dev.gui.desktop.GuiMain;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,6 +46,14 @@ public class Drawer implements UnionLogInterface {
         }
     }
 
+    protected void DrawBackGround(){
+        imagePath = GuiMain.unionPropertyGet.GetObjectAttr("background", "image");
+        if (imagePath == null || imagePath.isEmpty()) {
+            log.error("Background image path is null or empty");
+        }
+        // TODO!
+    }
+
     public void InitPlatPaf(){
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
@@ -52,10 +61,9 @@ public class Drawer implements UnionLogInterface {
             log.error("Failed to initialize LaF");
         }
     }
-
     public void AddButton(JPanel buttonPanel){
         try {
-            LoadImg();
+            LoadImg(unionPropertyGet.GetUnderButtonWidth(), unionPropertyGet.GetUnderButtonHeight());
             button = new JButton(buttonText, icon);
             buttonPanel.add(button);
             log.info("Under Button added: " + buttonText + " with image " + imagePath);
@@ -64,9 +72,9 @@ public class Drawer implements UnionLogInterface {
         }
     }
 
-    public void LoadImg(){
-        if (imagePath.toLowerCase().endsWith(".svg")) {
-            icon = loadSvgIconInterface.LoadSvgIcon(imagePath, unionPropertyGet.GetUnderButtonWidth(), unionPropertyGet.GetUnderButtonHeight());
+    public void LoadImg(int width, int height){
+        if (imagePath != null && imagePath.toLowerCase().endsWith(".svg")) {
+            icon = loadSvgIconInterface.LoadSvgIcon(imagePath, width, height);
         } else {
             log.error("Unsupported image format: " + imagePath);
         }

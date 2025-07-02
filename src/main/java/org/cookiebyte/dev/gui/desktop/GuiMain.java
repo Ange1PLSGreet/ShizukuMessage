@@ -20,10 +20,6 @@ public class GuiMain extends Drawer implements UnionLogInterface, GuiMainInterfa
 
     public static final LoadSvgIconInterfaceImpl loadSvgIconInterface = new LoadSvgIconInterfaceImpl();
 
-    public int width;
-
-    public int height;
-
     public int screenWidth;
 
     public int screenHeight;
@@ -38,12 +34,11 @@ public class GuiMain extends Drawer implements UnionLogInterface, GuiMainInterfa
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 screenWidth = screenSize.width / 2;
                 screenHeight = screenSize.height / 2;
-                width = screenSize.width;
-                height = screenSize.height;
                 frame.setSize(screenWidth, screenHeight);
                 frame.setVisible(true);
                 log.info("GUI initialized successfully");
                 Frame.frame = frame;
+                DrawBackGround();
                 DrawUnderButtons();
             });
         });
@@ -54,5 +49,9 @@ public class GuiMain extends Drawer implements UnionLogInterface, GuiMainInterfa
             log.error("Interrupted while waiting for GUI initialization: " + e.getMessage());
             Thread.currentThread().interrupt();
         }
+    }
+
+    public static void main(String[] args){
+        guiMain.Initialize();
     }
 }

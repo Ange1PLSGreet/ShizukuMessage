@@ -43,9 +43,8 @@ Store The Gui Property
     <!--
       Under Button Style
     -->
-    <under-button width="95" height="95" hgap="10" vgap="20" layout="1">
+    <under-button width="95" height="95" hgap="40" vgap="30" layout="0">
         <under-btn img="src/main/resources/images/01.svg" text=""/>
-        <under-btn img="src/main/resources/images/02.svg" text=""/>
     </under-button>
 
     <!--
@@ -68,5 +67,7 @@ Store The Gui Property
     <side-button>
         <side-btn img="src/main/resources/images/02.png" text="Personal"/>
     </side-button>
+
+    <background color="" image="src/main/resources/images/bg.svg"/>
 
 </gui-property>

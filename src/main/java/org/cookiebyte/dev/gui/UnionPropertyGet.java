@@ -179,6 +179,16 @@ public class UnionPropertyGet implements UnionLogInterface, GuiObjectInterface {
         return 1;
     }
 
+    public String GetBackGroundPath(){
+        try{
+            String path = GetObjectAttr("background", "image");
+            return path;
+        } catch (Exception e) {
+            log.error("Error: " + e.getMessage());
+        }
+        return null;
+    }
+
     /**
      * Get Under Button Object
      * @return underButton A list containing multiple button image paths and texts

@@ -26,32 +26,34 @@ public class LoadSvgIconInterfaceImpl implements LoadSvgIconInterface, UnionLogI
      * @throws  文件读取异常
      */
     public Icon LoadSvgIcon(String svgPath, int width, int height) {
-       try{
-           String parser = XMLResourceDescriptor.getXMLParserClassName();
-           SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
-           SVGDocument document = factory.createSVGDocument(new File(svgPath).toURI().toString());
+        try{
+            String parser = XMLResourceDescriptor.getXMLParserClassName();
+            SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
+            SVGDocument document = factory.createSVGDocument(new File(svgPath).toURI().toString());
 
-           UserAgent userAgent = new UserAgentAdapter();
-           DocumentLoader loader = new DocumentLoader(userAgent);
-           BridgeContext ctx = new BridgeContext(userAgent, loader);
-           ctx.setDynamicState(BridgeContext.DYNAMIC);
-           GVTBuilder builder = new GVTBuilder();
-           GraphicsNode root = builder.build(ctx, document);
+            UserAgent userAgent = new UserAgentAdapter();
+            DocumentLoader loader = new DocumentLoader(userAgent);
+            BridgeContext ctx = new BridgeContext(userAgent, loader);
+            ctx.setDynamicState(BridgeContext.DYNAMIC);
+            GVTBuilder builder = new GVTBuilder();
+            GraphicsNode root = builder.build(ctx, document);
 
-           BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-           Graphics2D g2d = image.createGraphics();
-           g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-           g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-           g2d.scale((double) width / document.getRootElement().getWidth().getBaseVal().getValue(),
-                   (double) height / document.getRootElement().getHeight().getBaseVal().getValue());
-           root.paint(g2d);
-           g2d.dispose();
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = image.createGraphics();
+            // 设置渲染提示
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-           return new ImageIcon(image);
-       } catch (IOException e) {
-           log.error("Failed to load SVG icon: " + e.getMessage());
-           return null;
-       }
+            g2d.scale((double) width / document.getRootElement().getWidth().getBaseVal().getValue(),
+                    (double) height / document.getRootElement().getHeight().getBaseVal().getValue());
+            root.paint(g2d);
+            g2d.dispose();
+
+            return new ImageIcon(image);
+        } catch (IOException e) {
+            log.error("Failed to load SVG icon: " + e.getMessage());
+            return null;
+        }
     }
 
 }
