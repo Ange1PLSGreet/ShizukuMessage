@@ -1,6 +1,5 @@
 package org.cookiebyte.dev.gui.desktop;
 
-import com.formdev.flatlaf.FlatLightLaf;
 import org.cookiebyte.dev.announce.log.UnionLogInterface;
 import org.cookiebyte.dev.gui.Drawer;
 import org.cookiebyte.dev.gui.UnionPropertyGet;
@@ -10,7 +9,6 @@ import org.cookiebyte.dev.gui.Frame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class GuiMain extends Drawer implements UnionLogInterface, GuiMainInterface {
 

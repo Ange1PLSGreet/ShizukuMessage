@@ -1,10 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
   <!-- 定义渐变 -->
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#87CEEB" /> <!-- 天蓝色 -->
-      <stop offset="0.5" stop-color="#FFB6C1" /> <!-- 粉色 -->
-      <stop offset="100%" stop-color="#98FB98" /> <!-- 抹茶色 -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0088cc" />
+      <stop offset="100%" stop-color="#0077b3" />
     </linearGradient>
     
     <!-- 装饰元素的图案 -->
@@ -31,3 +30,4 @@
   <path d="M0,550 C150,530 250,570 350,550 C450,530 550,570 650,550 C750,530 780,570 800,550 L800,600 L0,600 Z" 
         fill="#ffffff" opacity="0.02" />
 </svg>
+    

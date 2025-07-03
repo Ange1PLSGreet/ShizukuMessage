@@ -28,6 +28,8 @@ public class Drawer implements UnionLogInterface {
         List<String> underButtonList = unionPropertyGet.GetUnderButton();
         if (underButtonList != null && !underButtonList.isEmpty()) {
             JPanel buttonPanel = new JPanel(new FlowLayout(unionPropertyGet.GetLayout(), unionPropertyGet.GetUnderButtonHgap(), unionPropertyGet.GetUnderButtonVgap()));
+            // 设置按钮面板为透明
+            buttonPanel.setOpaque(false);
             for (int i = 0; i < underButtonList.size(); i += 2) {
                 imagePath = underButtonList.get(i);
                 buttonText = underButtonList.get(i + 1);
@@ -35,7 +37,10 @@ public class Drawer implements UnionLogInterface {
             }
             // 确保 frame 不为 null 再添加组件
             if (Frame.frame != null) {
-                Frame.frame.add(buttonPanel, BorderLayout.SOUTH);
+                // 获取背景标签
+                JLabel backgroundLabel = (JLabel) Frame.frame.getContentPane();
+                backgroundLabel.setLayout(new BorderLayout());
+                backgroundLabel.add(buttonPanel, BorderLayout.SOUTH);
                 Frame.frame.revalidate();
                 Frame.frame.repaint();
             } else {
@@ -47,11 +52,22 @@ public class Drawer implements UnionLogInterface {
     }
 
     protected void DrawBackGround(){
+
         imagePath = GuiMain.unionPropertyGet.GetObjectAttr("background", "image");
         if (imagePath == null || imagePath.isEmpty()) {
             log.error("Background image path is null or empty");
+            return;
         }
-        // TODO!
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        LoadImg(screenSize.width, screenSize.height);
+
+        if (icon != null && Frame.frame != null) {
+            JLabel backgroundLabel = new JLabel(icon);
+            backgroundLabel.setLayout(new BorderLayout());
+            Frame.frame.setContentPane(backgroundLabel);
+            Frame.frame.revalidate();
+            Frame.frame.repaint();
+        }
     }
 
     public void InitPlatPaf(){
