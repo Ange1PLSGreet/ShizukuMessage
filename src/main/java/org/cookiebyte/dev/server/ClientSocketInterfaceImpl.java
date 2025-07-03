@@ -35,6 +35,30 @@ public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketI
         }
     }
 
+    public void StartIPCCommunication() {
+        try (BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in))) {
+            ConnectToServer();
+            String line;
+            while ((line = stdin.readLine()) != null) {
+                if ("exit".equalsIgnoreCase(line)) {
+                    break;
+                }
+                message = line;
+                SendMessageToServer();
+                // 读取服务器响应并输出到标准输出
+                String response = input.readLine();
+                if (response != null) {
+                    System.out.println(response);
+                    System.out.flush();
+                }
+            }
+        } catch (IOException e) {
+            log.error("IPC communication error: " + e.getMessage());
+        } finally {
+            close();
+        }
+    }
+
     // Multi Thread Conn Impl
     public void ConnectToServer() {
         Thread connectThread = new Thread(() -> {
