@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "serve": "vite serve",
-    "dev": "concurrently \"npm run serve\" \"npm:start:electron\"",
+    "start": "concurrently \"npm run serve\" \"npm:start:electron\"",
     "build": "vite build",
     "preview": "vite preview",
     "start:electron": "electron ."
