@@ -11,15 +11,15 @@
 
 ``` server ``` 服务器包/客户端包 存储着服务器和客户端的实现 
 
-``` gui ``` 界面包 分为desktop和mobile两个包，一个为桌面端，一个为移动端
+``` gui ``` 界面包 分为desktop和mobile两个包，一个为桌面端，一个为移动端(废弃)
 
-``` image ``` 图形绘制包 存储着绘制SVG图像的实现 
+``` image ``` 图形绘制包 存储着绘制SVG图像的实现(废弃) 
 
 ``` cryptor ``` 加密包 存储着加密和解密的实现
 
 ## resources xml内容
 
-``` gui_property.xml ``` 
+``` gui_property.xml ```(废弃)
 
 存储着GUI的信息，根据这些信息在``` UnionProperty.java ``` 里编写方法获取
 
