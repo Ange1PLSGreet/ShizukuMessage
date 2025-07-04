@@ -15,5 +15,18 @@ export default defineConfig({
   },
   server: {
     port: 3000
+  },
+  optimizeDeps: {
+    // 排除 child_process 模块
+    exclude: ['child_process']
+  },
+  build: {
+    commonjsOptions: {
+      include: []
+    },
+    // 关闭摇树优化，避免错误移除相关模块
+    rollupOptions: {
+      treeshake: false
+    }
   }
 })
