@@ -71,10 +71,9 @@ export const executeJavaCommand = (ip, port) => {
         let output = '';
         let errorOutput = '';
         const jarPath = path.join(__dirname, '..', 'jars', 'CookieByte_ClientSocket.jar');
-        const classPath = `target:org:${jarPath}`;
+        const classPath = `target/classes;${jarPath}`;
         const javaCommand = [
             'java',
-            '-Dfile.encoding=UTF-8',
             '-cp',
             classPath,
             'org.cookiebyte.dev.server.IPCClient',
