@@ -53,7 +53,9 @@ public class ClientSocketInterfaceImpl implements ClientSocketInterface, SocketI
                 }
             }
         } catch (IOException e) {
+            System.err.println("IPC communication error: " + e.getMessage());
             log.error("IPC communication error: " + e.getMessage());
+            System.exit(1);
         } finally {
             close();
         }

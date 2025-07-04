@@ -20,6 +20,11 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 npm run dev
 ```
 
+如果出现错误，请运行
+```sh
+npm install
+```
+
 ### Compile and Minify for Production
 
 ``` gui_property.xml ```(废弃)

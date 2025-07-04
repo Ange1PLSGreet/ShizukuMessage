@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite serve",
     "serve": "vite serve",
     "start": "concurrently \"npm run serve\" \"npm:start:electron\"",
     "build": "vite build",

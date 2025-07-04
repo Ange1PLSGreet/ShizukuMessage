@@ -64,16 +64,26 @@ export const executeCommand = (command) => {
     });
 };
 
+
 // 执行 Java 命令
 export const executeJavaCommand = (ip, port) => {
     return new Promise((resolve, reject) => {
         let output = '';
         let errorOutput = '';
-        // 修改 JAR 文件路径到 jars 目录
-        const jarPath = path.join(__dirname, '..', 'jars', 'CookieByte--ClientSocket.jar');
-        const javaCommand =  'java -Dfile.encoding=UTF-8 -cp target:org:jars/CookieByte--ClientSocket.jar org.cookiebyte.dev.server.IPCClient localhost 8080';
-        console.log('即将执行的 Java 命令:', javaCommand);
-        const child = spawn(javaCommand, { shell: true, encoding: 'utf8' });
+        const jarPath = path.join(__dirname, '..', 'jars', 'CookieByte_ClientSocket.jar');
+        const classPath = `target:org:${jarPath}`;
+        const javaCommand = [
+            'java',
+            '-Dfile.encoding=UTF-8',
+            '-cp',
+            classPath,
+            'org.cookiebyte.dev.server.IPCClient',
+            ip,
+            port
+        ];
+
+        console.log('即将执行的 Java 命令:', javaCommand.join(' '));
+        const child = spawn(javaCommand[0], javaCommand.slice(1), { encoding: 'utf8' });
 
         child.stdout.on('data', (data) => {
             output += data.toString();
@@ -81,17 +91,22 @@ export const executeJavaCommand = (ip, port) => {
 
         child.stderr.on('data', (data) => {
             errorOutput += data.toString();
+            // 实时打印错误信息
+            console.error('Java 命令执行过程中出错:', data.toString());
         });
 
         child.on('close', (code) => {
             if (code !== 0) {
-                reject(new Error(errorOutput));
+                const error = new Error(errorOutput);
+                console.error('Java 命令执行结束时出错:', error);
+                reject(error);
             } else {
                 resolve(output);
             }
         });
 
         child.on('error', (err) => {
+            console.error('Java 进程启动出错:', err);
             reject(err);
         });
     });
