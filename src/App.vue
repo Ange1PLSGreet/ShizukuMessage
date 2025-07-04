@@ -13,7 +13,7 @@ const javaCommandOutput = ref('');
 const runJavaCommand = async () => {
   try {
     const ip = '127.0.0.1'; // 替换为实际 IP 地址
-    const port = '8080'; // 替换为实际端口号
+    const port = '4900'; // 替换为实际端口号
     const result = await window.myAPI.executeJavaCommand(ip, port);
     javaCommandOutput.value = result;
   } catch (error) {

@@ -1,8 +1,10 @@
 import sys
 import xml.etree.ElementTree as ET
 import subprocess
+import time
 import glob
 import os
+import shutil
 
 def modify_log4j_config():
     """修改 src/main/resources/log4j2.xml 里的 status 为 OFF"""
@@ -97,12 +99,6 @@ def compile_project():
         subprocess.run(jar_command, check=True)
         print("ipc JAR 包生成成功")
 
-        # 尝试运行服务器套接字
-        try:
-            subprocess.run(["java", "-jar", "jars/CookieByte-DevModeServerSocketJar.jar"], check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"运行 ServerSocket JAR 时出错: {e}")
-            sys.exit(1)
     except subprocess.CalledProcessError as e:
         print(f"ipc 项目编译失败: {e}")
         sys.exit(1)
@@ -122,6 +118,31 @@ def compile_frontend():
         print(f"前端项目启动失败: {e}")
         sys.exit(1)
 
+def handle_dev_mode_jar(mode):
+    jar_path = "jars/CookieByte-DevModeServerSocketJar.jar"
+    cache_dir = os.path.join(os.getenv("HOME"), ".cache/CookieByte")
+    cached_jar_path = os.path.join(cache_dir, "CookieByte-DevModeServerSocketJar.jar")
+
+    if mode == "dev":
+        if os.path.exists(cached_jar_path):
+            os.makedirs("jars", exist_ok=True)
+            shutil.copy2(cached_jar_path, jar_path)
+            print("已从缓存复制 DevModeServerSocket JAR 文件")
+        if os.path.exists(jar_path):
+            try:
+                subprocess.run(["java", "-jar", jar_path], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"运行 ServerSocket JAR 时出错: {e}")
+                sys.exit(1)
+        else:
+            print("未找到 DevModeServerSocket JAR 文件，跳过运行")
+    else:
+        if os.path.exists(jar_path):
+            os.makedirs(cache_dir, exist_ok=True)
+            shutil.move(jar_path, cached_jar_path)
+            print("已将 DevModeServerSocket JAR 文件移动到缓存目录")
+
+
 if __name__ == '__main__':
     # 检查参数数量
     if len(sys.argv) < 2:
@@ -134,7 +155,10 @@ if __name__ == '__main__':
     elif mode != "dev":
         print("无效的模式，请选择 dev 或 publish")
         sys.exit(1)
-
     if run_tests():
         compile_project()
+        python_command = f"python3 -c 'import sys; from compile_script import handle_dev_mode_jar; handle_dev_mode_jar(\"{mode}\")'"
+        print(f"请手动执行：{python_command} 在新的终端中")
+        time.sleep(10)
+        terminal_found = False
         compile_frontend()
