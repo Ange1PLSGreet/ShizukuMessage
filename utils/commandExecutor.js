@@ -71,7 +71,13 @@ export const executeJavaCommand = (ip, port) => {
         let output = '';
         let errorOutput = '';
         const jarPath = path.join(__dirname, '..', 'jars', 'CookieByte_ClientSocket.jar');
-        const classPath = `target/classes;${jarPath}`;
+        console.log('正在执行的 jar 路径:', jarPath);
+        // Get System
+        if (process.platform === 'win32') {
+           var classPath = `target/classes;${jarPath}`;
+        } else {
+           classPath = `target/classes:${jarPath}`;
+        }
         const javaCommand = [
             'java',
             '-cp',
