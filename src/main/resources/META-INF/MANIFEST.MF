@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: org.cookiebyte.dev.ipc.IPCBoolFlag
+Main-Class: org.cookiebyte.dev.server.ServerSocketInterfaceImpl
 
