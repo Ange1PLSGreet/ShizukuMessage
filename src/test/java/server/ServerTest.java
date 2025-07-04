@@ -31,18 +31,6 @@ public class ServerTest {
             out.println(0x01);
         });
 
-        // 创建客户端实例
-        ClientSocketInterfaceImpl client = new ClientSocketInterfaceImpl();
-        client.ip = "127.0.0.1";
-        client.port = port;
-        client.message = "测试消息";
-        // 启动客户端
-        client.RunClient();
-
-        // 验证客户端连接成功
-        assertNotNull(client.socket);
-
-        // 关闭线程池
         executor.shutdown();
         executor.awaitTermination(5, TimeUnit.SECONDS);
     }

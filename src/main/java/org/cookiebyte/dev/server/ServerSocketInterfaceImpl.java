@@ -33,7 +33,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
                     Socket clientSocket = serverSocket.accept();
                     log.info("GetDataStream. Socket accepted.");
                     log.info("Client Connected. IP:" + clientSocket.getInetAddress());
-                    executorService.submit(() -> handleClient(clientSocket));
+                    executorService.submit(() -> HandleClient(clientSocket));
                 }
             } catch (IOException e) {
                 log.error(e.getMessage());
@@ -42,7 +42,7 @@ public class ServerSocketInterfaceImpl implements ServerSocketInterface, SocketI
         serverThread.start();
     }
 
-    private void handleClient(Socket clientSocket) {
+    private void HandleClient(Socket clientSocket) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);

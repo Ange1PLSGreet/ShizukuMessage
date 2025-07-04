@@ -1,4 +1,6 @@
-package org.cookiebyte.dev.server;
+package org.cookiebyte.dev.ipc;
+
+import org.cookiebyte.dev.server.ClientSocketInterfaceImpl;
 
 /**
  * IPC客户端
