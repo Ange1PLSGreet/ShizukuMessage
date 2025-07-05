@@ -66,8 +66,17 @@ export const executeCommand = (command) => {
 
 
 // 执行 Java 命令
-export const executeJavaCommand = (ip, port) => {
+// 在原有 executeJavaCommand 函数中添加输入处理
+export const executeJavaCommand = (ip, port, inputHandler) => {
     return new Promise((resolve, reject) => {
+        const javaProcess = spawn('java', ['-jar', 'jars/CookieByte_IPC.jar', ip, port]);
+        
+        // 添加标准输入处理
+        if(inputHandler) {
+            inputHandler.onInput = (data) => {
+                javaProcess.stdin.write(data + '\n');  // 将输入内容写入进程
+            };
+        }
         let output = '';
         let errorOutput = '';
         const jarPath = path.join(__dirname, '..', 'jars', 'CookieByte_ClientSocket.jar');

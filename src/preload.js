@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 try {
     console.log('开始执行 preload.js');
     console.log('准备注入 window.myAPI');
+    // 在预加载脚本中暴露输入处理器
     contextBridge.exposeInMainWorld('myAPI', {
         // 确保方法名正确暴露
         executeJavaCommand: (ip, port) => {
@@ -15,6 +16,9 @@ try {
         // 添加 getPlatform 方法
         getPlatform: () => {
             return process.platform;
+        },
+        inputHandler: {
+            onInput: null // 由主进程设置
         }
     });
     console.log('window.myAPI 注入成功');

@@ -26,23 +26,39 @@ def run_tests():
     """运行测试并返回测试是否成功"""
     print("正在执行测试...")
     try:
-        test_command = subprocess.run(["mvn", "test"], capture_output=True, text=True, check=True)
+        # 添加 shell=True 参数确保能正确找到系统路径
+        test_command = subprocess.run(["mvn", "test"], 
+                                    capture_output=True, 
+                                    text=True, 
+                                    check=True,
+                                    shell=True)  # 添加 shell 参数
         print("测试通过")
         return True
     except subprocess.CalledProcessError as e:
         print("测试失败，终止编译")
         print("错误信息:")
         print(e.stderr)
+        # 添加 Maven 安装提示
+        print("\n请确认已正确安装 Maven 并配置环境变量")
+        print("官方下载地址：https://maven.apache.org/download.cgi")
+        return False
+    except FileNotFoundError:  # 添加文件未找到的专门处理
+        print("错误：未找到 Maven 执行文件 (mvn)")
+        print("请确认 Maven 已安装并添加到系统 PATH 环境变量")
         return False
 
 def compile_project():
     """编译项目"""
     print("正在编译主项目...")
     try:
-        subprocess.run(["mvn", "clean", "package"], check=True)
+        subprocess.run(["mvn", "clean", "package"], check=True, shell=True)  # 添加 shell 参数
         print("主项目编译成功")
     except subprocess.CalledProcessError as e:
         print(f"主项目编译失败: {e}")
+        sys.exit(1)
+    except FileNotFoundError:
+        print("错误：未找到 Maven 执行文件 (mvn)")
+        print("请确认 Maven 已安装并添加到系统 PATH 环境变量")
         sys.exit(1)
 
     print("正在编译 ipc 目录下的项目...")
@@ -54,8 +70,9 @@ def compile_project():
         dependency_dir = "target/dependency-jars"
 
         # 创建输出目录
-        subprocess.run(["mkdir", "-p", output_dir], check=True)
-        subprocess.run(["mkdir", "-p", jar_output_dir], check=True)
+        # 使用Python原生目录创建（Windows兼容）
+        os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(jar_output_dir, exist_ok=True)
 
         # 查找 Java 文件
         java_files = glob.glob(f"{ipc_src_dir}/*.java")
@@ -82,9 +99,9 @@ def compile_project():
         # 处理清单文件
         manifest_src = "src/main/resources/META-INF/MANIFEST.MF"
         manifest_dest = "target/classes/META-INF"
-        subprocess.run(["mkdir", "-p", manifest_dest], check=True)
+        os.makedirs(manifest_dest, exist_ok=True)
         if os.path.exists(manifest_src):
-            subprocess.run(["cp", manifest_src, manifest_dest], check=True)
+            shutil.copy2(manifest_src, manifest_dest)  # 使用shutil替代cp命令
             print("清单文件复制成功")
         else:
             # 创建简单的 MANIFEST.MF 文件
@@ -107,21 +124,29 @@ def compile_frontend():
     """编译前端项目"""
     print("正在安装前端依赖...")
     try:
-        subprocess.run(["cnpm", "install"], check=True)
+        # 添加 shell=True 并处理 Windows 路径空格
+        subprocess.run(["cnpm", "install"], check=True, shell=True)
     except (subprocess.CalledProcessError, FileNotFoundError):
-        subprocess.run(["npm", "install"], check=True)
+        try:
+            # 回退到 npm 并添加 shell=True
+            subprocess.run(["npm", "install"], check=True, shell=True)
+        except subprocess.CalledProcessError as e:
+            print(f"前端依赖安装失败: {e}")
+            sys.exit(1)
     print("正在启动前端项目...")
     try:
-        subprocess.run(["npm", "run", "start", "electron"], check=True)
+        # 添加 shell=True 参数
+        subprocess.run(["npm", "run", "start", "electron"], check=True, shell=True)
         print("前端项目启动成功")
     except subprocess.CalledProcessError as e:
         print(f"前端项目启动失败: {e}")
         sys.exit(1)
 
 def handle_dev_mode_jar(mode):
-    jar_path = "jars/CookieByte-DevModeServerSocketJar.jar"
-    cache_dir = os.path.join(os.getenv("HOME"), ".cache/CookieByte")
+    # 修改为Windows兼容的路径获取方式
+    cache_dir = os.path.join(os.getenv("USERPROFILE"), ".cache", "CookieByte")  # 使用USERPROFILE替代HOME
     cached_jar_path = os.path.join(cache_dir, "CookieByte-DevModeServerSocketJar.jar")
+    jar_path = "jars/CookieByte-DevModeServerSocketJar.jar"
 
     if mode == "dev":
         if os.path.exists(cached_jar_path):
@@ -157,8 +182,9 @@ if __name__ == '__main__':
         sys.exit(1)
     if run_tests():
         compile_project()
-        python_command = f"python3 -c 'import sys; from compile_script import handle_dev_mode_jar; handle_dev_mode_jar(\"{mode}\")'"
-        print(f"请手动执行：{python_command} 在新的终端中")
-        time.sleep(10)
-        terminal_found = False
+        # 修正引号转义问题
+        python_command = f'start cmd /k "python -c \"from compile_script import handle_dev_mode_jar; handle_dev_mode_jar(\'{mode}\')\""'
+        print("请执行以下命令（直接复制到CMD窗口）：")
+        print(python_command)
+        time.sleep(3)
         compile_frontend()
